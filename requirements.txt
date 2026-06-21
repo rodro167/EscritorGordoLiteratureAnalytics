@@ -19,6 +19,6 @@ sentence-transformers==5.5.1
 requests==2.34.2
 beautifulsoup4==4.15.0
 
-# --- LLM (PASO 3, pendiente) ---
-# Todavía no instalado; descomentar y pinear al instalarlo:
-# anthropic
+# --- Síntesis LLM (PASO 4) ---
+anthropic==0.111.0
+python-dotenv==1.2.2     # carga ANTHROPIC_API_KEY desde .env

@@ -75,7 +75,8 @@ escritor-gordo-rag/
 ├── src/
 │   ├── ingestion.py         # Cargador (PASO 1)
 │   ├── embedding.py         # Vectorización (PASO 2)
-│   └── retrieval.py         # Búsqueda (PASO 3)
+│   ├── retrieval.py         # Búsqueda (PASO 3)
+│   └── sintesis.py          # Síntesis con LLM (PASO 4)
 ├── test_ingestion.py        # Tests PASO 1
 ├── test_embedding.py        # Tests PASO 2
 ├── test_retrieval.py        # Tests PASO 3
@@ -98,8 +99,15 @@ paraphrase-multilingual-MiniLM-L12-v2 (384 dims), colección "escritor_gordo".
 buscar(query, categoria, fecha_desde, fecha_hasta, top_k) sobre la base
 existente, sin re-indexar. Filtros validados: categoría y período funcionando.
 
-**PASO 4 - SÍNTESIS LLM:** Pendiente — conectar Claude para que arme respuestas
-en prosa a partir de los chunks recuperados.
+**PASO 4 - SÍNTESIS LLM:** ✅ src/sintesis.py creado — clase SintetizadorRAG
+con responder(pregunta, categoria, fecha_desde, fecha_hasta, top_k) que recupera
+los chunks (vía BuscadorRAG) y arma una respuesta en prosa con Claude Sonnet
+(claude-sonnet-4-6), citando los textos de origen. La API key se lee de .env
+(ANTHROPIC_API_KEY) con python-dotenv, nunca hardcodeada. Pipeline RAG completo
+y validado end-to-end contra la API real.
+
+**PASO 5 - INTERFAZ STREAMLIT:** Pendiente — próximo paso: una UI web en
+Streamlit sobre SintetizadorRAG para consultar la obra de forma interactiva.
 
 ---
 
