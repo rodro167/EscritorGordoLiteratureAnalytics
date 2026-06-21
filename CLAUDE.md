@@ -94,7 +94,23 @@ test_ingestion.py ✅ hecho.
 indexados en data/chroma.db/ con el modelo
 paraphrase-multilingual-MiniLM-L12-v2 (384 dims), colección "escritor_gordo".
 
-**PASO 3 - RETRIEVAL:** Pendiente — sigue la búsqueda con filtros.
+**PASO 3 - RETRIEVAL:** ✅ src/retrieval.py creado — clase BuscadorRAG con
+buscar(query, categoria, fecha_desde, fecha_hasta, top_k) sobre la base
+existente, sin re-indexar. Filtros validados: categoría y período funcionando.
+
+**PASO 4 - SÍNTESIS LLM:** Pendiente — conectar Claude para que arme respuestas
+en prosa a partir de los chunks recuperados.
+
+---
+
+## Notas / deuda técnica
+
+- **Filtro de fechas (Paso 3):** el rango de fechas se resuelve en Python
+  post-query, no en el motor, porque ChromaDB 1.5.9 no acepta `$gte`/`$lte`
+  sobre strings (solo int/float). Funciona porque `YYYY-MM-DD` ordena
+  lexicográficamente = cronológicamente. Solución canónica futura, si hiciera
+  falta: re-indexar agregando un campo `fecha_num` (int `YYYYMMDD`) a la
+  metadata y usar `$gte`/`$lte` sobre ese campo. Irrelevante a 572 chunks.
 
 ---
 
