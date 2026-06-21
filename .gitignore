@@ -1,0 +1,23 @@
+# --- Entornos virtuales ---
+.venv/
+venv/
+
+# --- Base vectorial generada ---
+data/chroma.db/
+
+# --- Textos literarios (no se versionan) ---
+data/textos/
+
+# --- Artefactos Python ---
+__pycache__/
+*.pyc
+*.pyo
+
+# --- Entorno / secretos ---
+.env
+
+# --- Basura de editor / SO ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

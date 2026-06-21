@@ -1,0 +1,7 @@
+langchain
+langchain-text-splitters
+pyyaml
+python-dateutil
+chromadb
+sentence-transformers
+anthropic
