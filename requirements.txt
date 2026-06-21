@@ -1,7 +1,24 @@
-langchain
-langchain-text-splitters
-pyyaml
-python-dateutil
-chromadb
-sentence-transformers
-anthropic
+# Dependencias directas del proyecto, pineadas a las versiones realmente
+# instaladas y funcionando en el venv (fuente de verdad: pip freeze).
+# No se listan las transitivas para mantener el archivo legible; pip las
+# resuelve solo. Si se necesita reproducibilidad exacta, generar un
+# requirements.lock con `pip freeze > requirements.lock`.
+
+# --- Ingesta (PASO 1) ---
+langchain==1.3.9
+langchain-core==1.4.7
+langchain-text-splitters==1.1.2
+PyYAML==6.0.3
+python-dateutil==2.9.0.post0
+
+# --- Embedding + ChromaDB (PASO 2) ---
+chromadb==1.5.9
+sentence-transformers==5.5.1
+
+# --- Scraper (recolección de textos) ---
+requests==2.34.2
+beautifulsoup4==4.15.0
+
+# --- LLM (PASO 3, pendiente) ---
+# Todavía no instalado; descomentar y pinear al instalarlo:
+# anthropic

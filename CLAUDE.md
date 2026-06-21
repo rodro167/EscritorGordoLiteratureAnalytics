@@ -88,11 +88,13 @@ escritor-gordo-rag/
 ## Estado Actual
 
 **PASO 1 - INGESTA:** ✅ src/ingestion.py completo — 40 archivos → 572 chunks.
-Falta test_ingestion.py.
+test_ingestion.py ✅ hecho.
 
-**PASO 2:** Pendiente
+**PASO 2 - EMBEDDING + ChromaDB:** ✅ src/embedding.py creado — 572 chunks
+indexados en data/chroma.db/ con el modelo
+paraphrase-multilingual-MiniLM-L12-v2 (384 dims), colección "escritor_gordo".
 
-**PASO 3:** Pendiente
+**PASO 3 - RETRIEVAL:** Pendiente — sigue la búsqueda con filtros.
 
 ---
 
