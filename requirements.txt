@@ -22,3 +22,6 @@ beautifulsoup4==4.15.0
 # --- Síntesis LLM (PASO 4) ---
 anthropic==0.111.0
 python-dotenv==1.2.2     # carga ANTHROPIC_API_KEY desde .env
+
+# --- Interfaz web (PASO 5) ---
+streamlit==1.58.0        # UI: ejecutar con `streamlit run app.py`

@@ -59,6 +59,8 @@ sentence-transformers       # embeddings locales (Paso 2)
 anthropic==0.25.0           # solo LLM en Paso 3, NO para embeddings
 python-dateutil==2.8.2
 pyyaml==6.0
+python-dotenv               # carga ANTHROPIC_API_KEY desde .env (Paso 4)
+streamlit                   # interfaz web (Paso 5): streamlit run app.py
 ```
 
 Instalar con: `pip install -r requirements.txt`
@@ -77,6 +79,7 @@ escritor-gordo-rag/
 │   ├── embedding.py         # Vectorización (PASO 2)
 │   ├── retrieval.py         # Búsqueda (PASO 3)
 │   └── sintesis.py          # Síntesis con LLM (PASO 4)
+├── app.py                   # Interfaz web Streamlit (PASO 5)
 ├── test_ingestion.py        # Tests PASO 1
 ├── test_embedding.py        # Tests PASO 2
 ├── test_retrieval.py        # Tests PASO 3
@@ -106,8 +109,13 @@ los chunks (vía BuscadorRAG) y arma una respuesta en prosa con Claude Sonnet
 (ANTHROPIC_API_KEY) con python-dotenv, nunca hardcodeada. Pipeline RAG completo
 y validado end-to-end contra la API real.
 
-**PASO 5 - INTERFAZ STREAMLIT:** Pendiente — próximo paso: una UI web en
+**PASO 5 - INTERFAZ STREAMLIT:** ✅ app.py creado y probado — UI web en
 Streamlit sobre SintetizadorRAG para consultar la obra de forma interactiva.
+Filtros de categoría, período (año desde/hasta) y top_k en la barra lateral;
+muestra la respuesta en prosa y los textos citados. El motor RAG se instancia
+una sola vez con @st.cache_resource (no recarga embeddings ni reabre ChromaDB
+en cada interacción). Se ejecuta con `streamlit run app.py`. Fase 1 (MVP RAG)
+cerrada.
 
 ---
 
@@ -119,6 +127,19 @@ Streamlit sobre SintetizadorRAG para consultar la obra de forma interactiva.
   lexicográficamente = cronológicamente. Solución canónica futura, si hiciera
   falta: re-indexar agregando un campo `fecha_num` (int `YYYYMMDD`) a la
   metadata y usar `$gte`/`$lte` sobre ese campo. Irrelevante a 572 chunks.
+
+- **Ruido de tracebacks al levantar Streamlit (Paso 5):** al arrancar con
+  `streamlit run app.py` aparecen muchos tracebacks
+  `ModuleNotFoundError: No module named 'torchvision'`. Son ruido del
+  file-watcher de Streamlit inspeccionando `transformers`, NO afectan el
+  funcionamiento de la app. Pendiente: silenciarlos, sea desactivando el
+  watcher (`server.fileWatcherType = "none"`) o instalando `torchvision`.
+
+- **Calidad de retrieval (Paso 5, candidato Fase 2):** el modelo de embeddings
+  actual (MiniLM, `paraphrase-multilingual-MiniLM-L12-v2`) prioriza la
+  coincidencia léxica sobre la evocación sutil; los textos nostálgicos
+  indirectos no siempre se recuperan. Candidato a mejora en Fase 2: un modelo
+  de embeddings más potente y/o revisión de la estrategia de chunking.
 
 ---
 
@@ -132,5 +153,5 @@ Streamlit sobre SintetizadorRAG para consultar la obra de forma interactiva.
 ---
 
 **Versión:** 1.0 Fase 1  
-**Estado:** En desarrollo  
-**Última actualización:** Junio 2025
+**Estado:** Fase 1 (MVP RAG) cerrada  
+**Última actualización:** Agosto 2025
