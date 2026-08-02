@@ -23,6 +23,14 @@ Ataca la causa raíz del diagnóstico. Palancas:
   infancia" y ver si aparece "Mañana sin hechizo".
 - Revisar la estrategia de chunking (tamaño, límites por unidad de sentido).
 - Avanzado: búsqueda híbrida (semántica + palabras clave) y/o re-ranking.
+- Armar un conjunto de evaluación (eval set): ~15-20 consultas con sus
+  documentos esperados, para medir mejoras de retrieval con números y no
+  con impresiones. Primer caso ya identificado por testing exploratorio:
+  "nostalgia de la infancia" debe recuperar "Mañana sin hechizo" (hoy no
+  lo hace). Métricas de referencia: recall y precisión (y orden: MRR/nDCG).
+  Este set se corre antes/después de cada cambio (modelo de embeddings,
+  chunking) para comparar objetivamente. La evaluación de la síntesis
+  (fidelidad, relevancia, correctitud de citas) queda como capa posterior.
 
 ### 2. MCP (objetivo original del proyecto)
 Envolver BuscadorRAG en un servidor MCP para exponer "preguntarle a la
