@@ -47,12 +47,92 @@ METADATA_DEFAULT = {
 _FRONTMATTER_RE = re.compile(r"^\s*---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
 
 
+# --- Configuración de chunking (externalizada a config.yaml) --------------
+# Valores de respaldo si config.yaml falta, no se puede leer o le falta la
+# sección `chunking`. Son los mismos que estaban hardcodeados históricamente,
+# así el comportamiento por defecto no cambia si el config no está.
+CHUNK_TAMANO_DEFAULT = 800
+CHUNK_OVERLAP_DEFAULT = 100
+
+# config.yaml vive en la raíz del proyecto; este módulo está en src/.
+_RUTA_CONFIG = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.yaml"
+)
+
+
+def cargar_config_chunking(ruta_config: str = _RUTA_CONFIG) -> dict:
+    """Lee los parámetros de chunking desde config.yaml.
+
+    Devuelve siempre un dict {'tamano_chunk': int, 'overlap': int}. Si el
+    archivo no existe, no se puede leer/parsear, o le falta la sección
+    `chunking` (o alguno de sus valores es inválido), cae a los defaults
+    (CHUNK_TAMANO_DEFAULT / CHUNK_OVERLAP_DEFAULT) con un warning claro, en
+    vez de romper la ingesta.
+    """
+    fallback = {
+        "tamano_chunk": CHUNK_TAMANO_DEFAULT,
+        "overlap": CHUNK_OVERLAP_DEFAULT,
+    }
+
+    if not os.path.exists(ruta_config):
+        logger.warning(
+            "config.yaml no encontrado en %s; uso defaults de chunking (%d/%d)",
+            ruta_config, fallback["tamano_chunk"], fallback["overlap"])
+        return fallback
+
+    try:
+        with open(ruta_config, "r", encoding="utf-8") as fh:
+            cfg = yaml.safe_load(fh) or {}
+    except (OSError, yaml.YAMLError) as exc:
+        logger.warning(
+            "No se pudo leer/parsear config.yaml (%s); uso defaults (%d/%d)",
+            exc, fallback["tamano_chunk"], fallback["overlap"])
+        return fallback
+
+    seccion = cfg.get("chunking") if isinstance(cfg, dict) else None
+    if not isinstance(seccion, dict):
+        logger.warning(
+            "config.yaml sin sección 'chunking' válida; uso defaults (%d/%d)",
+            fallback["tamano_chunk"], fallback["overlap"])
+        return fallback
+
+    resultado = dict(fallback)
+    for clave in ("tamano_chunk", "overlap"):
+        valor = seccion.get(clave)
+        # bool es subclase de int en Python; lo excluimos explícitamente.
+        if isinstance(valor, int) and not isinstance(valor, bool) and valor >= 0:
+            resultado[clave] = valor
+        else:
+            logger.warning(
+                "config.yaml: 'chunking.%s' ausente o inválido (%r); uso default %d",
+                clave, valor, fallback[clave])
+    return resultado
+
+
 class CargadorTextos:
     """Carga y prepara los textos .md para el pipeline RAG."""
 
     def __init__(self, ruta_datos: str = "data/textos",
-                 tamano_chunk: int = 800, overlap: int = 100):
+                 tamano_chunk: int = None, overlap: int = None):
         self.ruta_datos = ruta_datos
+
+        # Precedencia: argumentos explícitos > config.yaml > fallback
+        # hardcodeado. Un futuro pipeline de barrido puede pasar los valores
+        # directo al constructor sin tocar el YAML; si no se pasan, mandan los
+        # del config (y si el config falla, cargar_config_chunking ya cayó a
+        # los defaults 800/100).
+        if tamano_chunk is None or overlap is None:
+            cfg = cargar_config_chunking()
+            if tamano_chunk is None:
+                tamano_chunk = cfg["tamano_chunk"]
+            if overlap is None:
+                overlap = cfg["overlap"]
+
+        self.tamano_chunk = tamano_chunk
+        self.overlap = overlap
+        logger.info("Chunking: tamano_chunk=%d, overlap=%d",
+                    tamano_chunk, overlap)
+
         self._splitter = RecursiveCharacterTextSplitter(
             chunk_size=tamano_chunk,
             chunk_overlap=overlap,

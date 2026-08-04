@@ -1,0 +1,10 @@
+# Configuración del Analizador de Obra Literaria de Escritor Gordo.
+#
+# Parámetros de experimento (NO secretos: los secretos van en .env). Se
+# versionan a propósito para poder ver y comparar con qué configuración se
+# midió cada corrida del eval (ver ROADMAP.md, frente 1: experimento de
+# chunking).
+
+chunking:
+  tamano_chunk: 800   # tamaño objetivo de cada fragmento, en caracteres
+  overlap: 100        # superposición entre fragmentos consecutivos, en caracteres
