@@ -94,9 +94,12 @@ escritor-gordo-rag/
 **PASO 1 - INGESTA:** ✅ src/ingestion.py completo — 40 archivos → 572 chunks.
 test_ingestion.py ✅ hecho.
 
-**PASO 2 - EMBEDDING + ChromaDB:** ✅ src/embedding.py creado — 572 chunks
-indexados en data/chroma.db/ con el modelo
-paraphrase-multilingual-MiniLM-L12-v2 (384 dims), colección "escritor_gordo".
+**PASO 2 - EMBEDDING + ChromaDB:** ✅ src/embedding.py creado — 577 chunks
+indexados en data/chroma.db/ con el modelo `BAAI/bge-m3` (1024 dims),
+colección "escritor_gordo". El modelo se elige vía la constante
+`MODELO_EMBEDDING`. Inicialmente se usó `paraphrase-multilingual-MiniLM-L12-v2`
+(384 dims); tras el experimento comparativo del frente 1 (ver ROADMAP.md) se
+adoptó bge-m3, reemplazando al MiniLM inicial.
 
 **PASO 3 - RETRIEVAL:** ✅ src/retrieval.py creado — clase BuscadorRAG con
 buscar(query, categoria, fecha_desde, fecha_hasta, top_k) sobre la base
@@ -135,11 +138,15 @@ cerrada.
   funcionamiento de la app. Pendiente: silenciarlos, sea desactivando el
   watcher (`server.fileWatcherType = "none"`) o instalando `torchvision`.
 
-- **Calidad de retrieval (Paso 5, candidato Fase 2):** el modelo de embeddings
-  actual (MiniLM, `paraphrase-multilingual-MiniLM-L12-v2`) prioriza la
-  coincidencia léxica sobre la evocación sutil; los textos nostálgicos
-  indirectos no siempre se recuperan. Candidato a mejora en Fase 2: un modelo
-  de embeddings más potente y/o revisión de la estrategia de chunking.
+- **Calidad de retrieval (frente 1, en curso):** se comparó el modelo de
+  embeddings (MiniLM → mpnet → bge-m3) con el eval set de 15 consultas
+  (`evaluar_retrieval.py`, registro en `resultados_eval.md`). Hallazgo: el
+  recall global casi no se mueve (~48–53% micro en los tres); cambiar el
+  modelo reparte distinto pero no sube el total. Se adoptó `BAAI/bge-m3` por
+  afinidad con el análisis literario (gana en consultas emocionales/abstractas),
+  no por recall. Hipótesis viva: el cuello de botella es el CHUNKING (o
+  consultas intrínsecamente difíciles como "humor e ironía", que ningún modelo
+  movió). Detalle y próximos pasos en ROADMAP.md, frente 1.
 
 ---
 

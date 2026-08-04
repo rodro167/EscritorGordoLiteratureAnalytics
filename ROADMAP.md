@@ -2,8 +2,8 @@
 
 ## Estado
 Fase 1 (MVP RAG) COMPLETA y versionada: ingesta (577 chunks) → embeddings
-locales (MiniLM multilingüe) + ChromaDB → retrieval con filtros →
-síntesis con Claude Sonnet → interfaz Streamlit.
+locales (`BAAI/bge-m3`, multilingüe, 1024 dims) + ChromaDB → retrieval con
+filtros → síntesis con Claude Sonnet → interfaz Streamlit.
 
 ## Diagnóstico pendiente (detectado al probar la Fase 1)
 El retrieval con el modelo actual (paraphrase-multilingual-MiniLM-L12-v2)
@@ -17,7 +17,21 @@ con el contexto que lo rodea.
 ## Frentes de trabajo (en orden sugerido)
 
 ### 1. Mejoras de calidad del retrieval (PRIORITARIO)
-Ataca la causa raíz del diagnóstico. Palancas:
+
+**Hallazgo del experimento de modelos (hecho):** se compararon tres modelos
+de embeddings (MiniLM → mpnet → bge-m3) con el eval set de 15 consultas
+(`evaluar_retrieval.py`, registro en `resultados_eval.md`). Recall global de
+los tres: ~48–53% micro — prácticamente empatados. **Conclusión: cambiar el
+modelo de embeddings NO mueve el recall global.** Reparte distinto (bge-m3
+gana en consultas emocionales/abstractas como "angustia" 5/5 y "absurdo"
+4/8, pierde en referenciales como "países" 2/6 e "individuos notables" 1/5),
+pero el total queda igual. Se eligió **bge-m3** por afinidad con el análisis
+literario, **no por recall**. Hipótesis viva: el cuello de botella no es el
+modelo sino probablemente el **chunking** (o consultas intrínsecamente
+difíciles como "humor e ironía", que ningún modelo movió). Nota: la palanca
+"modelo de embeddings" de abajo queda saldada; el foco pasa a chunking.
+
+Palancas:
 - Probar un modelo de embeddings más potente (multilingüe, más grande) y
   re-indexar. Experimento de control: repetir la query "nostalgia de la
   infancia" y ver si aparece "Mañana sin hechizo".

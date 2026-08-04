@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 # Configuración del almacén vectorial.
 RUTA_CHROMA = "data/chroma.db"
 NOMBRE_COLECCION = "escritor_gordo"
-MODELO_EMBEDDING = "paraphrase-multilingual-MiniLM-L12-v2"
+MODELO_EMBEDDING = "BAAI/bge-m3"
 TAMANO_BATCH = 100
 
 
