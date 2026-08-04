@@ -46,6 +46,29 @@ Palancas:
   chunking) para comparar objetivamente. La evaluación de la síntesis
   (fidelidad, relevancia, correctitud de citas) queda como capa posterior.
 
+**Próximo paso: experimento de chunking.** El experimento de modelos descartó
+al modelo de embeddings como cuello de botella. La hipótesis viva es el
+chunking: los parámetros actuales (tamaño 800 caracteres, overlap 100,
+`RecursiveCharacterTextSplitter` en `CargadorTextos` de `src/ingestion.py`)
+son una elección uniforme que puede no ser óptima para textos tan
+heterogéneos (cuentos cortos y sutiles vs. textos largos y torrenciales).
+
+Plan:
+1. Sacar `tamano_chunk` y `overlap` del código (hoy hardcodeados en
+   `src/ingestion.py`, clase `CargadorTextos`) a un archivo de configuración
+   visible y versionado (ej. `config.yaml` o `config.py`). NO al `.env`: no
+   son secretos, son parámetros de experimento que queremos ver y versionar.
+2. Armar un pipeline de barrido de parámetros: un script que itere sobre
+   varias configuraciones de chunking (ej. tamaños 400/600/800/1200, distintos
+   overlaps) y, para cada una, reindexe y corra `evaluar_retrieval.py`,
+   apendeando el resultado a `resultados_eval.md` con la config usada como
+   etiqueta. Así se comparan objetivamente sin cambiar nada a mano.
+3. Leer la tabla final y ver qué esquema de chunking mueve el recall (si es
+   que alguno lo mueve — sigue siendo hipótesis, no certeza).
+
+Método: mismo eval set de 15 consultas, misma medición que con los modelos,
+para que los números sean comparables.
+
 ### 2. MCP (objetivo original del proyecto)
 Envolver BuscadorRAG en un servidor MCP para exponer "preguntarle a la
 obra" como herramienta invocable por clientes MCP (ej. Claude Desktop).
