@@ -144,9 +144,14 @@ cerrada.
   recall global casi no se mueve (~48–53% micro en los tres); cambiar el
   modelo reparte distinto pero no sube el total. Se adoptó `BAAI/bge-m3` por
   afinidad con el análisis literario (gana en consultas emocionales/abstractas),
-  no por recall. Hipótesis viva: el cuello de botella es el CHUNKING (o
-  consultas intrínsecamente difíciles como "humor e ironía", que ningún modelo
-  movió). Detalle y próximos pasos en ROADMAP.md, frente 1.
+  no por recall. Luego se barrió el CHUNKING (tamaños 400/600/800/1200 con
+  MiniLM, `barrido_chunking.py`): curva en campana con pico en 600 para MiniLM,
+  pero medido 600 con bge-m3 dio el peor combo (34/70) — el tamaño óptimo
+  depende del modelo. Config consolidada: `BAAI/bge-m3` + `tamano_chunk=800`
+  (mejor combo medido: 37/70 micro, 55.2% macro), en `config.yaml`. El chunk
+  size se lee de `config.yaml` (precedencia args > config > fallback). Detalle
+  y trabajo futuro (megatest tamaños × overlaps sobre bge-m3) en ROADMAP.md,
+  frente 1.
 
 ---
 

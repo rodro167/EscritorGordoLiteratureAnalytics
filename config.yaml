@@ -6,5 +6,9 @@
 # chunking).
 
 chunking:
+  # 800 es el óptimo MEDIDO para el modelo en producción (bge-m3). El barrido
+  # con MiniLM daba pico en 600, pero medido con bge-m3 el 600 fue el peor
+  # combo (34/70) y el 800 el mejor (37/70, 55.2% macro): el tamaño óptimo
+  # depende del modelo. Ver ROADMAP.md (frente 1) y resultados_eval.md.
   tamano_chunk: 800   # tamaño objetivo de cada fragmento, en caracteres
   overlap: 100        # superposición entre fragmentos consecutivos, en caracteres

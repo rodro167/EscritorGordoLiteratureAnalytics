@@ -69,6 +69,28 @@ Plan:
 Método: mismo eval set de 15 consultas, misma medición que con los modelos,
 para que los números sean comparables.
 
+**Hallazgo del experimento de chunking (hecho):** se corrió un barrido de
+tamaños (400/600/800/1200, overlap 100) con MiniLM (`barrido_chunking.py`,
+corridas en `resultados_eval.md`). Con MiniLM la curva es en campana con pico
+en **600** (37/70 micro; 400 fragmenta y degrada, 1200 empieza a diluir).
+PERO al medir **600 directamente con bge-m3** (el modelo de producción)
+resultó el **PEOR** combo (34/70 micro, 45.9% macro), no el mejor.
+
+Aprendizaje clave: **el tamaño óptimo de chunking DEPENDE DEL MODELO.** 600
+ayuda a MiniLM pero perjudica a bge-m3, que rinde mejor con **800** (aprovecha
+mejor el contexto más largo). Corolario metodológico: **no se puede optimizar
+el chunking en un modelo rápido y transferir el resultado al modelo final**;
+hay que medir en el modelo que se va a usar.
+
+**Decisión consolidada: bge-m3 + chunk 800** (mejor combo medido: 37/70 micro,
+55.2% macro). Es la configuración vigente en `config.yaml`.
+
+**Trabajo futuro — "megatest":** barrido exhaustivo de tamaños × overlaps
+directamente sobre bge-m3, pensado para correr desatendido (una noche / un fin
+de semana), dado que cada reindexado de bge-m3 en CPU tarda ~11 min.
+`barrido_chunking.py` ya tiene el modelo y las configs como variables editables
+arriba para esto.
+
 ### 2. MCP (objetivo original del proyecto)
 Envolver BuscadorRAG en un servidor MCP para exponer "preguntarle a la
 obra" como herramienta invocable por clientes MCP (ej. Claude Desktop).
